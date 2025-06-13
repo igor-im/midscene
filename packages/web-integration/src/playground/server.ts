@@ -96,6 +96,15 @@ export default class PlaygroundServer {
 
     this.app.get('/context/:uuid', async (req, res) => {
       const { uuid } = req.params;
+
+      // Validate the UUID parameter
+      const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+      if (!uuidRegex.test(uuid)) {
+        return res.status(400).json({
+          error: 'Invalid UUID format',
+        });
+      }
+
       const contextFile = this.filePathForUuid(uuid);
 
       if (!existsSync(contextFile)) {
