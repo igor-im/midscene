@@ -146,6 +146,11 @@ export async function launchPuppeteerPage(
 
   try {
     launcherDebug('goto', target.url);
+    const allowedDomains = ['example.com', 'trusted-site.com']; // Define allowed domains
+    const urlObj = new URL(target.url);
+    if (!allowedDomains.includes(urlObj.hostname)) {
+      throw new Error(`Disallowed URL: ${target.url}`);
+    }
     await page.goto(target.url);
     if (waitForNetworkIdleTimeout > 0) {
       launcherDebug('waitForNetworkIdle', waitForNetworkIdleTimeout);
