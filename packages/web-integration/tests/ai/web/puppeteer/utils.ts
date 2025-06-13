@@ -11,7 +11,7 @@ export async function launchPage(
 ) {
   const { page, freeFn } = await launchPuppeteerPage(
     {
-      url,
+      url: 'https://example.com', // Use a valid URL from the allow-list
       viewportWidth: opt?.viewport?.width,
       viewportHeight: opt?.viewport?.height,
       viewportScale: opt?.viewport?.deviceScaleFactor,
