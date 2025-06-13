@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import type { Server } from 'node:http';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { ERROR_CODE_NOT_IMPLEMENTED_AS_DESIGNED } from '@/common/utils';
 import { getTmpDir } from '@midscene/core/utils';
 import { PLAYGROUND_SERVER_PORT } from '@midscene/shared/constants';
@@ -276,8 +276,15 @@ export default class PlaygroundServer {
 
       this.app.get('*', (req, res) => {
         const requestedPath = join(this.staticPath!, req.path);
-        if (existsSync(requestedPath)) {
-          res.sendFile(requestedPath);
+        const normalizedPath = resolve(requestedPath);
+
+        // Ensure the normalized path is within the staticPath directory
+        if (!normalizedPath.startsWith(resolve(this.staticPath!))) {
+          return res.status(403).send('Access denied');
+        }
+
+        if (existsSync(normalizedPath)) {
+          res.sendFile(normalizedPath);
         } else {
           res.sendFile(join(this.staticPath!, 'index.html'));
         }
